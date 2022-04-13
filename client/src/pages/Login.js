@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { getBasePath } from '../components/utils/pathHelper';
+import { Navigate } from 'react-router-dom';
 
 import {
   Container,
@@ -17,6 +17,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
+import { UserContext } from '../components/context/UserContext';
 
 const Login = () => {
   //Style
@@ -27,12 +28,13 @@ const Login = () => {
   };
 
   // UseState
-  const [state, setState] = useState({
+  const [state, setState] = React.useState({
     pswdVisibility: false,
   });
-  const [redirect, setRedirect] = useState(false);
-  const [username, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+  const [redirect, setRedirect] = React.useState(false);
+  const [username, setUserName] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const { user, setUser } = React.useContext(UserContext);
 
   // Functionality
   const handleClickShowPassword = () => {
@@ -50,12 +52,12 @@ const Login = () => {
 
   const submit = async (e) => {
     e.preventDefault();
-
-    await axios.post(`${getBasePath()}/auth/login`, {
+    const response = await axios.post(`${getBasePath()}/auth/login`, {
       username,
       password,
     });
-    //setRedirect(true)
+    console.log(response);
+    //setRedirect(true);
   };
 
   //Redirect
@@ -85,13 +87,13 @@ const Login = () => {
             type={state.pswdVisibility ? 'text' : 'password'}
             label="Password"
             margin="normal"
+            onChange={(e) => setPassword(e.target.value)}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
                   aria-label="Toggle password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
-                  onChange={(e) => setPassword(e.target.value)}
                   edge="end"
                 >
                   {state.pswdVisibility ? (
@@ -108,6 +110,10 @@ const Login = () => {
           </Button>
         </form>
       </Paper>
+      <div>
+        <h1>User Display here</h1>
+        <pre>{JSON.stringify(user, null, 2)}</pre>
+      </div>
     </Container>
   );
 };
